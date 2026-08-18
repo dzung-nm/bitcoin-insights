@@ -1,0 +1,18 @@
+[package]
+name = "nano-bitcoin"
+description = "A simple Bitcoin wallet implementation in Rust."
+version = "0.1.0"
+edition = "2024"
+authors = ["Dzung Nguyen Mau"]
+
+[dependencies]
+bs58 = { version = "0.5.1", features = ["check"] }
+rand = "0.10.2"
+sha2 = "0.11.0"
+pbkdf2 = "0.13.0"
+hmac = "0.13.0"
+k256 = "0.14.0"
+ripemd = "0.2.0"
+
+[dev-dependencies]
+cargo-husky = { version = "1", features = ["precommit-hook"] }
