@@ -1,4 +1,4 @@
-use nano_bitcoin::bip39::*;
+use bitcoin_insights::bip39::*;
 
 fn main() {
     let cryptographic_salt = create_random_salt();

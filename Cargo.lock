@@ -21,6 +21,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2af50177e190e07a26ab74f8b1efbfe2ef87da2116221318cb1c2e82baf7de06"
 
 [[package]]
+name = "bitcoin-insights"
+version = "0.1.0"
+dependencies = [
+ "bs58",
+ "cargo-husky",
+ "hmac",
+ "k256",
+ "pbkdf2",
+ "rand",
+ "ripemd",
+ "sha2 0.11.0",
+]
+
+[[package]]
 name = "block-buffer"
 version = "0.10.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -304,20 +318,6 @@ name = "libc"
 version = "0.2.186"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "68ab91017fe16c622486840e4c83c9a37afeff978bd239b5293d61ece587de66"
-
-[[package]]
-name = "nano-bitcoin"
-version = "0.1.0"
-dependencies = [
- "bs58",
- "cargo-husky",
- "hmac",
- "k256",
- "pbkdf2",
- "rand",
- "ripemd",
- "sha2 0.11.0",
-]
 
 [[package]]
 name = "num-traits"

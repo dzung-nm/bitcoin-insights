@@ -1,6 +1,6 @@
 [package]
-name = "nano-bitcoin"
-description = "A simple Bitcoin wallet implementation in Rust."
+name = "bitcoin-insights"
+description = "A simple implementation in Rust of some Bitcoin features for educational purposes."
 version = "0.1.0"
 edition = "2024"
 authors = ["Dzung Nguyen Mau"]
