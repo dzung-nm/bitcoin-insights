@@ -310,7 +310,7 @@ mod tests {
     #[test]
     fn test_generate_master_key() {
         let entropy = random_salt(32);
-        let mnemonic_words = generate_mnemonic_from_salt(&entropy);
+        let mnemonic_words = generate_mnemonic_from_salt(&entropy, Languages::English);
         let seed = mnemonic_to_seed(&mnemonic_words, &"password".to_string());
         let master_key = generate_master_key(&seed);
 
