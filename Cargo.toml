@@ -1,9 +1,9 @@
 [package]
 name = "bitcoin-insights"
 description = "A simple implementation in Rust of some Bitcoin features for educational purposes."
+authors = ["Dzung Nguyen Mau"]
 version = "0.1.0"
 edition = "2024"
-authors = ["Dzung Nguyen Mau"]
 
 [dependencies]
 bs58 = { version = "0.5.1", features = ["check"] }
