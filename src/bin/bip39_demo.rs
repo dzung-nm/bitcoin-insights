@@ -1,9 +1,16 @@
 use bitcoin_insights::bip39::*;
-use bitcoin_insights::random_salt;
+use bitcoin_insights::{bytes_to_hex, random_salt};
 
 fn main() {
-    let cryptographic_salt = random_salt(32);
+    let salt = random_salt(16);
 
-    let mnemonic = generate_mnemonic_from_salt(&cryptographic_salt);
+    let salt_hex = bytes_to_hex(&salt, true);
+    println!("Generated random salt (16 bytes): {}", salt_hex);
+
+    let mnemonic = generate_mnemonic_from_salt(&salt);
     println!("\nGenerated mnemonic: {:?}", mnemonic);
+
+    let seed = mnemonic_to_seed(&mnemonic, &"password".to_string());
+    let seed_hex = bytes_to_hex(&seed, true);
+    println!("\nDerived seed (64 bytes): {}", seed_hex);
 }

@@ -4,9 +4,6 @@ use sha2::{Digest, Sha256};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
-pub const ENTROPY_LENGTH: usize = 256; // Must be a multiple of 32 bits within the range of 128 to 256 bits
-pub const CHECKSUM_LENGTH: usize = ENTROPY_LENGTH / 32; // Should be in [4, 5, 6, 7, 8]
-
 /// Get the bit at position i from the byte array data
 fn get_bit(data: &[u8], i: usize) -> u8 {
     (data[i / 8] >> (7 - (i % 8))) & 1
@@ -24,29 +21,28 @@ fn read_mnemonic_words() -> Vec<String> {
 }
 
 /// Generate a mnemonic phrase from a given salt
+/// Valid salt lengths are 16, 20, 24, 28, or 32 bytes (128, 160, 192, 224, or 256 bits)
 pub fn generate_mnemonic_from_salt(salt: &[u8]) -> Vec<String> {
-    assert_eq!(ENTROPY_LENGTH % 32, 0);
-    assert_eq!(
-        salt.len(),
-        ENTROPY_LENGTH / 8,
-        "Salt length must be {} bytes",
-        ENTROPY_LENGTH / 8
-    );
+    if ![16, 20, 24, 28, 32].contains(&salt.len()) {
+        panic!("Invalid salt length. Must be 16, 20, 24, 28, or 32 bytes.");
+    }
 
     let mnemonic_words = read_mnemonic_words();
+    let entropy_length = salt.len() * 8; // Entropy length in bits
+    let checksum_length = entropy_length / 32; // Checksum length in bits
 
     let hash_bytes = Sha256::digest(salt);
-    let checksum_bits = hash_bytes[0] >> (8 - CHECKSUM_LENGTH);
+    let checksum_bits = hash_bytes[0] >> (8 - checksum_length);
 
-    let total_bits = ENTROPY_LENGTH + CHECKSUM_LENGTH;
+    let total_bits = entropy_length + checksum_length;
     let total_bytes = (total_bits + 7) / 8; // Round up
 
     let mut data = vec![0u8; total_bytes];
     data[..salt.len()].copy_from_slice(salt);
 
     // Place checksum bits at the correct position
-    let byte_index = ENTROPY_LENGTH / 8;
-    data[byte_index] = checksum_bits << (8 - CHECKSUM_LENGTH);
+    let byte_index = entropy_length / 8;
+    data[byte_index] = checksum_bits << (8 - checksum_length);
 
     // Now we can generate the mnemonic words
     let mut mnemonic = Vec::new();
@@ -97,6 +93,13 @@ mod tests {
             bytes_to_hex(&seed.as_slice(), false),
             "6226705e713f303e6bcd9750e1996b9f5dfa6fb842ab3887e9ee9302623832be79eca3dd73fc1100da30542700a8fecd4accb62cd4e930622dcd835cf00e2c15"
         );
+    }
+
+    #[test]
+    #[should_panic(expected = "Invalid salt length. Must be 16, 20, 24, 28, or 32 bytes.")]
+    fn test_invalid_salt_length() {
+        let invalid_salt = [0u8; 15]; // Invalid length
+        generate_mnemonic_from_salt(&invalid_salt);
     }
 
     #[test]
