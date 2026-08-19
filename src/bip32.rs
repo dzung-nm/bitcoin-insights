@@ -304,11 +304,12 @@ pub fn ckd_pub(parent: &ExtendedPubKey, index: u32) -> Option<ExtendedPubKey> {
 mod tests {
     use super::*;
     use crate::bip39::*;
+    use crate::random_salt;
     use crate::hex::hex_to_bytes;
 
     #[test]
     fn test_generate_master_key() {
-        let entropy = create_random_salt();
+        let entropy = random_salt(32);
         let mnemonic_words = generate_mnemonic_from_salt(&entropy);
         let seed = mnemonic_to_seed(&mnemonic_words, &"password".to_string());
         let master_key = generate_master_key(&seed);

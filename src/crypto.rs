@@ -1,5 +1,6 @@
 use k256::SecretKey;
 use k256::elliptic_curve::sec1::ToSec1Point;
+use rand::{rng, RngExt};
 use sha2::{Sha256, Digest};
 use ripemd::Ripemd160;
 
@@ -30,11 +31,28 @@ pub fn get_compressed_pubkey(priv_key_bytes: &[u8; 32]) -> [u8; 33] {
         .expect("Compressed public key must be 33 bytes")
 }
 
+/// Create a cryptographic random salt with a specified length in bytes.
+pub fn random_salt(length: usize) -> Vec<u8> {
+    let mut crypto_rng = rng();
+
+    let mut cryptographic_salt = vec![0u8; length];
+    crypto_rng.fill(&mut cryptographic_salt);
+
+    cryptographic_salt
+}
+
 #[rustfmt::skip]
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::hex::*;
+    
+    #[test]
+    fn test_random_salt() {
+        let salt_length = 32; // 32 bytes
+        let salt = random_salt(salt_length);
+        assert_eq!(salt.len(), salt_length);
+    }
 
     #[test]
     fn test_hash160() {

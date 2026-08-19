@@ -1,6 +1,5 @@
 // https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki
 
-use rand::{RngExt, rng};
 use sha2::{Digest, Sha256};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
@@ -11,16 +10,6 @@ pub const CHECKSUM_LENGTH: usize = ENTROPY_LENGTH / 32; // Should be in [4, 5, 6
 /// Get the bit at position i from the byte array data
 fn get_bit(data: &[u8], i: usize) -> u8 {
     (data[i / 8] >> (7 - (i % 8))) & 1
-}
-
-/// Create a cryptographic random salt
-pub fn create_random_salt() -> [u8; ENTROPY_LENGTH / 8] {
-    let mut crypto_rng = rng();
-
-    let mut cryptographic_salt = [0u8; ENTROPY_LENGTH / 8];
-    crypto_rng.fill(&mut cryptographic_salt);
-
-    cryptographic_salt
 }
 
 /// Read mnemonic words from the english.txt file
