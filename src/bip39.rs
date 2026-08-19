@@ -21,28 +21,23 @@ fn read_mnemonic_words() -> Vec<String> {
 }
 
 /// Generate a mnemonic phrase from a given salt
-/// Valid salt lengths are 16, 20, 24, 28, or 32 bytes (128, 160, 192, 224, or 256 bits)
 pub fn generate_mnemonic_from_salt(salt: &[u8]) -> Vec<String> {
+    // Valid salt lengths are 16, 20, 24, 28, or 32 bytes (128, 160, 192, 224, or 256 bits)
     if ![16, 20, 24, 28, 32].contains(&salt.len()) {
         panic!("Invalid salt length. Must be 16, 20, 24, 28, or 32 bytes.");
     }
 
     let mnemonic_words = read_mnemonic_words();
-    let entropy_length = salt.len() * 8; // Entropy length in bits
-    let checksum_length = entropy_length / 32; // Checksum length in bits
+
+    let entropy_length = salt.len() * 8; // Entropy length in bits [128, 160, 192, 224, 256]
+    let checksum_length = entropy_length / 32; // Checksum length in bits [4, 5, 6, 7, 8]
+    let total_bits = entropy_length + checksum_length; // [132, 165, 198, 231, 264]
 
     let hash_bytes = Sha256::digest(salt);
-    let checksum_bits = hash_bytes[0] >> (8 - checksum_length);
 
-    let total_bits = entropy_length + checksum_length;
-    let total_bytes = (total_bits + 7) / 8; // Round up
-
-    let mut data = vec![0u8; total_bytes];
+    let mut data = vec![0u8; salt.len() + 1]; // Extra byte for checksum
     data[..salt.len()].copy_from_slice(salt);
-
-    // Place checksum bits at the correct position
-    let byte_index = entropy_length / 8;
-    data[byte_index] = checksum_bits << (8 - checksum_length);
+    data[salt.len()] = hash_bytes[0];
 
     // Now we can generate the mnemonic words
     let mut mnemonic = Vec::new();
