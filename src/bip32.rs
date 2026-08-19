@@ -6,7 +6,7 @@ use k256::elliptic_curve::sec1::ToSec1Point;
 use k256::{Scalar, elliptic_curve::PrimeField};
 use sha2::Sha512;
 
-use crate::crypto::get_compressed_pubkey;
+use crate::k256::get_compressed_pubkey;
 use crate::crypto::hash160;
 
 type HmacSha512 = Hmac<Sha512>;
