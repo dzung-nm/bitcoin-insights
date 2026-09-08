@@ -73,7 +73,6 @@ impl UtxoVerifier {
                 Opcode::OpHash160 => {
                     let data = stack.pop().ok_or(VerificationError::StackUnderflow)?;
                     let hashed = hash160(&data);
-                    println!("{:?}", hashed);
                     stack.push(Vec::from(hashed));
                 }
 

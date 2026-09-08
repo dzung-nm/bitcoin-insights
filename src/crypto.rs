@@ -24,6 +24,17 @@ pub fn random_salt(length: usize) -> Vec<u8> {
     cryptographic_salt
 }
 
+/// Compute the transaction ID (txid) by performing a double SHA-256 hash on 
+/// the serialized transaction data.
+pub fn compute_txid(serialized_tx: &[u8]) -> [u8; 32] {
+    let first_hash = Sha256::digest(serialized_tx);
+    let second_hash = Sha256::digest(&first_hash);
+
+    let mut txid = [0u8; 32];
+    txid.copy_from_slice(&second_hash);
+    txid
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
