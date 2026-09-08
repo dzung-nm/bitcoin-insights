@@ -16,7 +16,9 @@ fn main() {
         Opcode::OpCheckSig,
     ];
 
-    match UtxoVerifier::verify(&script_sig, &script_pubkey) {
+    let tx_hash = [0x42; 32];
+
+    match UtxoVerifier::verify(&script_sig, &script_pubkey, &tx_hash) {
         Ok(valid) => {
             if valid {
                 println!("Transaction is valid!");
