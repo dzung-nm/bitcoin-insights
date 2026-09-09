@@ -1,7 +1,22 @@
 use k256::SecretKey;
-use k256::elliptic_curve::sec1::ToSec1Point;
-use k256::ecdsa::{Signature as EcdsaSignature, VerifyingKey};
 use k256::ecdsa::signature::Verifier;
+use k256::ecdsa::{Signature as EcdsaSignature, VerifyingKey};
+use k256::elliptic_curve::sec1::ToSec1Point;
+
+/// Generate an uncompressed public key (65 bytes) from a 32-byte private key.
+pub fn get_uncompressed_pubkey(priv_key_bytes: &[u8; 32]) -> [u8; 65] {
+    let secret_key =
+        SecretKey::from_bytes(priv_key_bytes.into()).expect("Invalid private key bytes");
+    let public_key = secret_key.public_key();
+
+    // Serialize public key to uncompressed format (65 bytes)
+    let encoded_point = public_key.to_sec1_point(false);
+
+    encoded_point
+        .as_bytes()
+        .try_into()
+        .expect("Uncompressed public key must be 65 bytes")
+}
 
 /// Generate compressed public key (33 bytes) from a 32-byte private key.
 pub fn get_compressed_pubkey(priv_key_bytes: &[u8; 32]) -> [u8; 33] {
@@ -49,7 +64,27 @@ mod tests {
     use super::*;
     use crate::bytes_to_hex;
     use k256::ecdsa::signature::Signer;
-    
+
+    #[test]
+    fn test_get_uncompressed_pubkey() {
+        // Example private key (32 bytes)
+        let priv_key_bytes: [u8; 32] = [
+            0x1e, 0x99, 0x3a, 0x4b, 0x5c, 0x6d, 0x7e, 0x8f,
+            0x90, 0xa1, 0xb2, 0xc3, 0xd4, 0xe5, 0xf6, 0x07,
+            0x18, 0x29, 0x3a, 0x4b, 0x5c, 0x6d, 0x7e, 0x8f,
+            0x90, 0xa1, 0xb2, 0xc3, 0xd4, 0xe5, 0xf6, 0x07,
+        ];
+
+        let uncompressed_pubkey = get_uncompressed_pubkey(&priv_key_bytes);
+        assert_eq!(uncompressed_pubkey.len(), 65);
+        assert_eq!(uncompressed_pubkey[0], 0x04); // Check prefix
+
+        let pubkey_hex = bytes_to_hex(&uncompressed_pubkey, true);
+
+        let expected = "0x04e0d7fb2551f38d96349c627b71a477774c9befa6dca866ac5425cbfce6e519616f502d8f84d94138a61babc477c586ae3e50839838a852b3984ea29084940bf4";
+        assert_eq!(pubkey_hex, expected);
+    }
+
     #[test]
     fn test_get_compressed_pubkey() {
         // Example private key (32 bytes)

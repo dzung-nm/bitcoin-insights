@@ -2,7 +2,8 @@ use k256::ecdsa::{SigningKey, signature::Signer};
 use k256::elliptic_curve::Generate;
 use rand::rngs::ThreadRng;
 
-use bitcoin_insights::{compute_txid, hash160, Opcode, UtxoVerifier};
+use bitcoin_insights::utxo_verifier::*;
+use bitcoin_insights::{compute_txid, hash160};
 
 fn main() {
     let serialized_transaction = "0100000001abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789000000006a47304402207e2f3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b02203c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b012103abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789ffffffff01abcdef012345678900000000";

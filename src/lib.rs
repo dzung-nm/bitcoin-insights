@@ -1,13 +1,15 @@
 mod address;
-mod hex;
 mod crypto;
+mod hex;
 mod k256;
 
-pub mod bip39;
+// Official feature modules
 pub mod bip32;
+pub mod bip39;
 pub mod utxo_verifier;
 
+// Re-export modules for easier access
 pub use address::*;
-pub use hex::*;
 pub use crypto::*;
-pub use utxo_verifier::*;
+pub use hex::*;
+pub use k256::*;
