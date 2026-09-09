@@ -50,7 +50,7 @@ mod tests {
     use crate::bytes_to_hex;
     use k256::ecdsa::signature::Signer;
     
-     #[test]
+    #[test]
     fn test_get_compressed_pubkey() {
         // Example private key (32 bytes)
         let priv_key_bytes: [u8; 32] = [
