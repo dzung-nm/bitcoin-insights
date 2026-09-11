@@ -7,6 +7,7 @@ mod k256;
 pub mod bip32;
 pub mod bip39;
 pub mod utxo_verifier;
+pub mod script;
 
 // Re-export modules for easier access
 pub use address::*;
