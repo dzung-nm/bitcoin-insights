@@ -27,6 +27,8 @@ impl Script {
                 Opcode::OpEqual => bytes.push(OP_EQUAL),
                 Opcode::OpEqualVerify => bytes.push(OP_EQUAL_VERIFY),
                 Opcode::OpCheckSig => bytes.push(OP_CHECKSIG),
+                Opcode::OpN(n) => bytes.push(OP_1 + n - 1),
+                Opcode::OpCheckMultiSig => bytes.push(OP_CHECKMULTISIG),
             }
         }
         bytes
@@ -39,12 +41,15 @@ impl Script {
         while i < bytes.len() {
             let byte = bytes[i];
             match byte {
+                OP_0 => opcodes.push(Opcode::OpPushData(vec![])),
                 OP_DUP => opcodes.push(Opcode::OpDup),
                 OP_HASH160 => opcodes.push(Opcode::OpHash160),
                 OP_EQUAL => opcodes.push(Opcode::OpEqual),
                 OP_EQUAL_VERIFY => opcodes.push(Opcode::OpEqualVerify),
                 OP_CHECKSIG => opcodes.push(Opcode::OpCheckSig),
+                OP_CHECKMULTISIG => opcodes.push(Opcode::OpCheckMultiSig),
                 OP_ADD => opcodes.push(Opcode::OpAdd),
+                n if n >= OP_1 && n <= OP_16 => opcodes.push(Opcode::OpN(n - OP_1 + 1)),
                 n if n >= 0x01 && n <= 0x4b => {
                     let data_len = n as usize;
                     if i + 1 + data_len > bytes.len() {
@@ -75,6 +80,18 @@ impl Script {
         payload.extend_from_slice(&ripemd160_hash);
 
         bs58::encode(payload).with_check().into_string()
+    }
+    
+    /// This is only meaningful if Self is a redeem script. 
+    pub fn generate_p2sh_script(&self) -> Script {
+        let bytes = self.to_bytes();
+        let sha256_hash = Sha256::digest(&bytes);
+        let pubkey_hash = Ripemd160::digest(&sha256_hash);
+        Script::new(vec![
+            Opcode::OpHash160,
+            Opcode::OpPushData(pubkey_hash.to_vec()),
+            Opcode::OpEqual,
+        ])
     }
 }
 
