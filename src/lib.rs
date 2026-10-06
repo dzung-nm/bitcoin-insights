@@ -7,6 +7,7 @@ mod k256;
 pub mod bip32;
 pub mod bip39;
 pub mod script;
+pub mod bloom_filter;
 
 // Re-export modules for easier access
 pub use address::*;
